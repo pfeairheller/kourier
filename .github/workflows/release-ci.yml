@@ -4,11 +4,8 @@
 
 name: Publishing builds to Digital Ocean
 on:
-  push:
-    branches:
-      - 'main'
-  pull_request:
-  workflow_dispatch:
+  release:
+    types: [ created ]
 
 jobs:
   upload:
