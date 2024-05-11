@@ -5,7 +5,7 @@
 name: GitHub Actions for keripy
 on:
   release:
-    types: [created]
+    types: [ created ]
 
 jobs:
   test:
@@ -31,12 +31,12 @@ jobs:
         uses: jakejarvis/s3-sync-action@master
         with:
           args: --acl-public --delete --follow-symlinks
-          env:
-            AWS_S3_BUCKET_ENDPOINT: "sfo3.digitaloceanspaces.com" # Update with your region endpoint
-            AWS_S3_BUCKET: "sfo3",
-            AWS_ACCESS_KEY_ID: ${{ secrets.SPACES_ACCESS_KEYD }}
-            AWS_SECRET_ACCESS_KEY: ${{ secrets.SPACES_SECRET_KEY }}
-            AWS_REGION: ${{ secrets.SPACES_REGION }}
-            SOURCE_DIR: "dist"
-            DEST_DIR: "kourier"
+        env:
+          AWS_S3_BUCKET_ENDPOINT: "sfo3.digitaloceanspaces.com" # Update with your region endpoint
+          AWS_S3_BUCKET: "sfo3",
+          AWS_ACCESS_KEY_ID: ${{ secrets.SPACES_ACCESS_KEYD }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.SPACES_SECRET_KEY }}
+          AWS_REGION: ${{ secrets.SPACES_REGION }}
+          SOURCE_DIR: "dist"
+          DEST_DIR: "kourier"
 
