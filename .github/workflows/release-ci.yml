@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  upload:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -23,7 +23,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip setuptools wheel
+        python -m pip install --upgrade pip setuptools wheel boto3
 
     - name: Build sdist
       run: python setup.py sdist
@@ -31,15 +31,7 @@ jobs:
     - name: Create tarball
       run: tar czf kourier-install-${{ github.event.release.tag_name }}.tar.gz conf/* dist/* scripts/kourier.sh
 
-    - name: Set up S3cmd cli tool
-      uses: s3-actions/s3cmd@v1.6.1
-      with:
-        provider: DigitalOcean # default is linode
-        region: ${{ secrets.SPACES_REGION }}
-        access_key:  ${{ secrets.SPACES_ACCESS_KEYD }}
-        secret_key: ${{ secrets.SPACES_SECRET_KEY }}
-
-    - name: Interact with object storage
+    - name: Upload tarball to DigitalOcean
       run: |
-        s3cmd put kourier-install-${{ github.event.release.tag_name }}.tar.gz s3://healthkeri-deployment/kourier/
+        python scripts/upload.py --access-key ${{ secrets.SPACES_ACCESS_KEYD }} --secret-key ${{ secrets.SPACES_SECRET_KEY }} --region ${{ secrets.SPACES_REGION }} --bucket "healthkeri-deployment" --object-key kourier/kourier-install-${{ github.event.release.tag_name }}.tar.gz --file kourier-install-${{ github.event.release.tag_name }}.tar.gz
 
