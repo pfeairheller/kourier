@@ -8,7 +8,7 @@ healthKERI REST API Service
 import argparse
 import logging
 
-from kourier.app import resting
+from kourier.app import mailing
 from keri import __version__
 from keri import help
 from keri.app import directing
@@ -19,11 +19,21 @@ parser.add_argument('-V', '--version',
                     action='version',
                     version=__version__,
                     help="Prints out version of script runner.")
+parser.add_argument('--base', '-b', help='additional optional prefix to file location of KERI keystore',
+                    required=False, default="")
 parser.add_argument('-H', '--http',
                     action='store',
-                    default=8989,
+                    default=9632,
                     help="Local port number the HTTP server listens on. Default is 7632.")
 parser.add_argument('-o', '--host',
+                    action='store',
+                    default="127.0.0.1",
+                    help="Local host IP address HTTP server listens on. Default is 127.0.0.1.")
+parser.add_argument('--bootport', '-bp',
+                    action='store',
+                    default=9631,
+                    help="Local port number the HTTP server listens on. Default is 7631.")
+parser.add_argument('--boothost', '-bh',
                     action='store',
                     default="127.0.0.1",
                     help="Local host IP address HTTP server listens on. Default is 127.0.0.1.")
@@ -41,7 +51,7 @@ parser.add_argument("--keypath", action="store", required=False, default=None)
 parser.add_argument("--certpath", action="store", required=False, default=None)
 parser.add_argument("--cafilepath", action="store", required=False, default=None)
 
-FORMAT = '%(asctime)s [watopnet] %(levelname)-8s %(message)s'
+FORMAT = '%(asctime)s [kourier] %(levelname)-8s %(message)s'
 
 
 def launch(args):
@@ -71,8 +81,11 @@ def runService(args, expire=0.0):
     Setup and run one witness
     """
 
-    doers = resting.setup(host=args.host,
+    doers = mailing.setup(base=args.base,
+                          host=args.host,
                           port=int(args.http),
+                          bootHost=args.boothost,
+                          bootPort=int(args.bootport),
                           keypath=args.keypath,
                           certpath=args.certpath,
                           cafilepath=args.cafilepath)

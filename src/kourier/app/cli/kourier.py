@@ -26,7 +26,7 @@ def main():
 
     except Exception as ex:
         import os
-        if os.getenv('DEBUG_kourier'):
+        if os.getenv('DEBUG_KOURIER'):
             import traceback
             traceback.print_exc()
         else:
