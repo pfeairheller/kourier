@@ -2,17 +2,22 @@
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
 
-name: GitHub Actions for keripy
+name: Publishing builds to Digital Ocean
 on:
-  release:
-    types: [ created ]
+  push:
+    branches:
+      - 'main'
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v2
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Prepare Python
+      uses: actions/setup-python@v2
       with:
         python-version: 3.12.2
 
@@ -26,16 +31,15 @@ jobs:
     - name: Create tarball
       run: tar czf kourier-install-${{ github.event.release.tag_name }}.tar.gz conf/* dist/* scripts/kourier.sh
 
-    - name: Upload to DigitalOcean Spaces
-      uses: jakejarvis/s3-sync-action@master
+    - name: Set up S3cmd cli tool
+      uses: s3-actions/s3cmd@v1.6.1
       with:
-        args: --acl-public --delete --follow-symlinks
-      env:
-        AWS_S3_BUCKET_ENDPOINT: "sfo3.digitaloceanspaces.com" # Update with your region endpoint
-        AWS_S3_BUCKET: "sfo3",
-        AWS_ACCESS_KEY_ID: ${{ secrets.SPACES_ACCESS_KEYD }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.SPACES_SECRET_KEY }}
-        AWS_REGION: ${{ secrets.SPACES_REGION }}
-        SOURCE_DIR: "dist"
-        DEST_DIR: "kourier"
+        provider: DigitalOcean # default is linode
+        region: ${{ secrets.SPACES_REGION }}
+        access_key:  ${{ secrets.SPACES_ACCESS_KEYD }}
+        secret_key: ${{ secrets.SPACES_SECRET_KEY }}
+
+    - name: Interact with object storage
+      run: |
+        s3cmd put kourier-install-${{ github.event.release.tag_name }}.tar.gz s3://healthkeri-deployment/kourier/
 
