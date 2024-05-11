@@ -33,5 +33,5 @@ jobs:
 
     - name: Upload tarball to DigitalOcean
       run: |
-        python scripts/upload.py --access-key ${{ secrets.SPACES_ACCESS_KEYD }} --secret-key ${{ secrets.SPACES_SECRET_KEY }} --region ${{ secrets.SPACES_REGION }} --bucket "healthkeri-deployment" --object-key kourier/kourier-install-${{ github.event.release.tag_name }}.tar.gz --file kourier-install-${{ github.event.release.tag_name }}.tar.gz
+        python scripts/upload.py --access-key ${{ secrets.SPACES_ACCESS_KEY }} --secret-key ${{ secrets.SPACES_SECRET_KEY }} --region ${{ secrets.SPACES_REGION }} --bucket "healthkeri-deployment" --object-key kourier/kourier-install-${{ github.event.release.tag_name }}.tar.gz --file kourier-install-${{ github.event.release.tag_name }}.tar.gz
 
