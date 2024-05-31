@@ -2,15 +2,11 @@
 
 """
 KERI
-witopnet.core.oobing package
+kourier.core.oobiing package
 
 """
 import falcon
-from keri import kering
 from keri.end import ending
-from ordered_set import OrderedSet as oset
-
-from keri.app import habbing
 
 
 class OOBIEnd:
@@ -62,7 +58,6 @@ class OOBIEnd:
 
         else:
             end = kourier.hab.db.ends.get(keys=(aid, role, eid))
-
             # We serve in this role for identifier
             if end and end.allowed and end.enabled is not False and aid == kourier.cid and eid == kourier.hab.pre:
                 hab = kourier.hby.habs[eid]

@@ -17,7 +17,7 @@ from keri.app import indirecting, habbing, storing, forwarding, oobiing
 from keri.core import routing, eventing, parsing, serdering, coring
 from keri.help import helping
 from keri.peer import exchanging
-from kourier.core import basing, httping, oobing
+from kourier.core import basing, httping, ending
 
 
 def setup(host="127.0.0.1", port=9632, bootHost="127.0.0.1", bootPort=9631, base=None, temp=False,
@@ -41,7 +41,7 @@ def setup(host="127.0.0.1", port=9632, bootHost="127.0.0.1", bootPort=9631, base
                         'signify-resource', 'signify-timestamp']))
     loadEnds(app, kry=kry)
     httping.loadEnds(app, kry=kry)
-    oobiEnd = oobing.OOBIEnd(kry=kry)
+    oobiEnd = ending.OOBIEnd(kry=kry)
     app.add_route("/oobi", oobiEnd)
     app.add_route("/oobi/{aid}", oobiEnd)
     app.add_route("/oobi/{aid}/{role}", oobiEnd)
@@ -279,7 +279,8 @@ class AuthCollectionEnd:
                         raise falcon.HTTPBadRequest(description="role must be mailbox")
 
                     if eid != kourier.hab.pre:
-                        raise falcon.HTTPBadRequest(description=f"mailbox eid={eid} does not match kourier aid={kourier.hab.pre}")
+                        raise falcon.HTTPBadRequest(
+                            description=f"mailbox eid={eid} does not match kourier aid={kourier.hab.pre}")
 
                     # Parse the event, get the KEL in our Kevers
                     kourier.parser.parse(msg, local=False)

@@ -8,7 +8,7 @@ MAILBOX=$(curl -s -XPOST http://localhost:9631/mailboxes -d'{"aid": "ENcOes8_t2C
 OOBI=$(echo "${MAILBOX}" | jq -r .oobis[0])
 EID=$(echo "${MAILBOX}" | jq -r .eid)
 
-echo "${WITNESS}"
+echo "${OOBI}"
 kli oobi resolve --name controller --oobi-alias mailbox0 --oobi "${OOBI}"
 
 kli mailbox add --name controller --alias controller --mailbox "${EID}"
@@ -23,7 +23,7 @@ MAILBOX=$(curl -s -XPOST http://localhost:9631/mailboxes -d'{"aid": "EC4Np106NSu
 OOBI=$(echo "${MAILBOX}" | jq -r .oobis[0])
 EID=$(echo "${MAILBOX}" | jq -r .eid)
 
-echo "${WITNESS}"
+echo "${OOBI}"
 kli oobi resolve --name controller1 --oobi-alias mailbox0 --oobi "${OOBI}"
 kli oobi resolve --name controller1 --oobi-alias controller --oobi "${COOBI}"
 kli mailbox add --name controller1 --alias controller1 --mailbox "${EID}"
