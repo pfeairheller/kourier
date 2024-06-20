@@ -38,11 +38,6 @@ parser.add_argument('--boothost', '-bh',
                     default="127.0.0.1",
                     help="Local host IP address HTTP server listens on. Default is 127.0.0.1.")
 parser.add_argument("--config-dir", "-c", dest="configDir", help="directory override for configuration data")
-parser.add_argument('--config-file',
-                    dest="configFile",
-                    action='store',
-                    default=None,
-                    help="configuration filename override")
 parser.add_argument("--loglevel", action="store", required=False, default="INFO",
                     help="Set log level to DEBUG | INFO | WARNING | ERROR | CRITICAL. Default is INFO")
 parser.add_argument("--logfile", action="store", required=False, default=None,
@@ -86,6 +81,7 @@ def runService(args, expire=0.0):
                           port=int(args.http),
                           bootHost=args.boothost,
                           bootPort=int(args.bootport),
+                          headDirPath=args.configDir,
                           keypath=args.keypath,
                           certpath=args.certpath,
                           cafilepath=args.cafilepath)

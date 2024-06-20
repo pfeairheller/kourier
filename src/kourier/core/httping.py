@@ -11,7 +11,10 @@ from keri.app import httping
 from keri.app.httping import CESR_DESTINATION_HEADER
 from keri.app.indirecting import MailboxIterable
 from keri.core import eventing, coring
+from keri.help import ogler
 from keri.kering import Ilks
+
+logger = ogler.getLogger()
 
 
 def loadEnds(app, kry):

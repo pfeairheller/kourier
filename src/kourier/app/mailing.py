@@ -5,7 +5,7 @@ kourier.app.mailing package
 
 """
 import json
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlsplit
 
 import falcon
 from falcon.media.multipart import MultipartParseError
@@ -13,7 +13,7 @@ from hio.base import doing
 from hio.core import http
 from hio.help import decking
 from keri import kering, core
-from keri.app import indirecting, habbing, storing, forwarding, oobiing
+from keri.app import indirecting, habbing, storing, forwarding, oobiing, configing
 from keri.core import routing, eventing, parsing, serdering, coring
 from keri.help import helping
 from keri.peer import exchanging
@@ -21,9 +21,11 @@ from kourier.core import basing, httping, ending
 
 
 def setup(host="127.0.0.1", port=9632, bootHost="127.0.0.1", bootPort=9631, base=None, temp=False,
-          keypath=None, certpath=None, cafilepath=None):
-    pobox = basing.PostOffice(base=base, temp=temp)
-    kry = Kouriery(pobox, host=host, port=port)
+          headDirPath=None, keypath=None, certpath=None, cafilepath=None):
+    pobox = basing.PostOffice(name="kourier", base=base, temp=temp)
+    cf = configing.Configer(name=pobox.name, headDirPath=headDirPath)
+
+    kry = Kouriery(pobox, cf=cf)
     bootApp = falcon.App(middleware=falcon.CORSMiddleware(
         allow_origins='*', allow_credentials='*',
         expose_headers=['cesr-attachment', 'cesr-date', 'content-type', 'signature', 'signature-input',
@@ -63,10 +65,22 @@ def loadEnds(app, kry):
 
 class Kouriery(doing.DoDoer):
 
-    def __init__(self, pobox, scheme="http", host="127.0.0.1", port=9632):
-        self.scheme = scheme
-        self.host = host
-        self.port = port
+    def __init__(self, pobox, cf=None):
+        self.cf = cf
+        if self.cf is not None:
+            conf = self.cf.get()
+            if "kourier" in conf:
+                conf = conf["kourier"]
+                if "dt" in conf:  # datetime of config file
+                    if "curls" in conf:
+                        curls = conf["curls"]
+                        self.url = curls[0]
+                        splits = urlsplit(self.url)
+                        self.host = splits.hostname
+                        self.port = splits.port
+                        self.scheme = (splits.scheme if splits.scheme in kering.Schemes
+                                       else kering.Schemes.http)
+
         self.pobox = pobox
         self.kors = dict()
 
