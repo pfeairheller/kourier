@@ -26,7 +26,7 @@ jobs:
       run: python setup.py sdist
 
     - name: Create tarball
-      run: tar czf kourier-install-${{ github.event.release.tag_name }}.tar.gz conf/* dist/* scripts/kourier.sh
+      run: tar czf kourier-install-${{ github.event.release.tag_name }}.tar.gz conf/* dist/* scripts/kourier-sample.sh
 
     - name: Upload tarball to DigitalOcean
       run: |
