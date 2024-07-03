@@ -6,6 +6,6 @@ kourier package
 
 """
 
-__version__ = '0.0.1'  # also change in setup.py
+__version__ = '0.0.3'  # also change in setup.py
 
 
