@@ -34,7 +34,7 @@ from setuptools import setup
 
 setup(
     name='kourier',
-    version='0.0.3',  # also change in src/kourier/__init__.py
+    version='0.0.4',  # also change in src/kourier/__init__.py
     license='None',
     description='The KERI Inbox as a Service',
     long_description="The KERI Inbox as a Service",
@@ -68,8 +68,8 @@ setup(
     ],
     python_requires='>=3.12.2',
     install_requires=[
-        'hio>=0.6.12',
-        'keri>=1.2.0-dev7',
+        'hio>=0.6.13',
+        'keri>=1.2.0-dev9',
         'multicommand>=1.0.0',
         'falcon>=3.1.0',
         'http_sfv>=0.9.8',
