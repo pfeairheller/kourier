@@ -7,10 +7,11 @@ kourier.core.httping package
 """
 
 import falcon
+from keri import kering
 from keri.app import httping
 from keri.app.httping import CESR_DESTINATION_HEADER
 from keri.app.indirecting import MailboxIterable
-from keri.core import eventing, coring
+from keri.core import coring
 from keri.help import ogler
 from keri.kering import Ilks
 
@@ -85,7 +86,7 @@ class HttpEnd:
         rep.set_header('connection', "close")
 
         cr = httping.parseCesrHttpRequest(req=req)
-        sadder = coring.Sadder(ked=cr.payload, kind=eventing.Serials.json)
+        sadder = coring.Sadder(ked=cr.payload, kind=kering.Kinds.json)
         msg = bytearray(sadder.raw)
         msg.extend(cr.attachments.encode("utf-8"))
 
