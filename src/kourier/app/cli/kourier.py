@@ -4,9 +4,9 @@ kourier.app.cli module
 
 """
 import multicommand
+from hio.base import doing
 from keri import help
 
-from keri.app import directing
 from kourier.app.cli import commands
 
 logger = help.ogler.getLogger()
@@ -22,7 +22,9 @@ def main():
 
     try:
         doers = args.handler(args)
-        directing.runController(doers=doers, expire=0.0)
+        tock = 0.00125
+        doist = doing.Doist(limit=0.0, tock=tock, real=True)
+        doist.do(doers=doers)
 
     except Exception as ex:
         import os
