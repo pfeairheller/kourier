@@ -20,12 +20,12 @@ class Kor:
     cid: str
 
 
-class PostOffice(dbing.LMDBer):
-    TailDirPath = "keri/postoffice"
-    AltTailDirPath = ".keri/postoffice"
-    TempPrefix = "keri_postoffice_"
+class Baser(dbing.LMDBer):
+    TailDirPath = "keri/kourier"
+    AltTailDirPath = ".keri/kourier"
+    TempPrefix = "keri_kourier_"
 
-    def __init__(self, name="postoffice", headDirPath=None, reopen=True, **kwa):
+    def __init__(self, name="kourier", headDirPath=None, reopen=True, **kwa):
         """
 
         Parameters:
@@ -37,12 +37,12 @@ class PostOffice(dbing.LMDBer):
         self.kors = None
         self.cids = None
 
-        super(PostOffice, self).__init__(name=name, headDirPath=headDirPath, reopen=reopen, **kwa)
+        super(Baser, self).__init__(name=name, headDirPath=headDirPath, reopen=reopen, **kwa)
 
     def reopen(self, **kwa):
         """  Reopen database and initialize sub-dbs
         """
-        super(PostOffice, self).reopen(**kwa)
+        super(Baser, self).reopen(**kwa)
 
         # Kourier dataclass keyed by watcher AID
         self.kors = koming.Komer(db=self, subkey='kors.', schema=Kor, )

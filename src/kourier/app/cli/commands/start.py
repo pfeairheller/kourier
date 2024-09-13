@@ -8,10 +8,11 @@ healthKERI REST API Service
 import argparse
 import logging
 
-from kourier.app import mailing
+from hio.base import doing
 from keri import __version__
 from keri import help
-from keri.app import directing
+
+from kourier.app import mailing
 
 parser = argparse.ArgumentParser(description="This is the bar command")
 parser.set_defaults(handler=lambda args: launch(args))
@@ -86,4 +87,6 @@ def runService(args, expire=0.0):
                           certpath=args.certpath,
                           cafilepath=args.cafilepath)
 
-    directing.runController(doers=doers, expire=expire)
+    tock = 0.00125
+    doist = doing.Doist(limit=expire, tock=tock, real=True)
+    doist.do(doers=doers)

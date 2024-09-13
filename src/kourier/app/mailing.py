@@ -12,20 +12,25 @@ from falcon.media.multipart import MultipartParseError
 from hio.base import doing
 from hio.core import http
 from hio.help import decking
-from keri import kering, core
+from keri import kering, core, help
 from keri.app import indirecting, habbing, storing, forwarding, oobiing, configing
 from keri.core import routing, eventing, parsing, serdering, coring
+from keri.db.basing import BaserDoer
 from keri.help import helping
 from keri.peer import exchanging
 from kourier.core import basing, httping, ending
 
+logger = help.ogler.getLogger()
+
 
 def setup(host="127.0.0.1", port=9632, bootHost="127.0.0.1", bootPort=9631, base=None, temp=False,
           headDirPath=None, keypath=None, certpath=None, cafilepath=None):
-    pobox = basing.PostOffice(name="kourier", base=base, temp=temp)
-    cf = configing.Configer(name=pobox.name, headDirPath=headDirPath)
 
-    kry = Kouriery(pobox, cf=cf)
+    db = basing.Baser(name="kourier", base=base, temp=temp)
+    dbDoer = BaserDoer(baser=db)
+    cf = configing.Configer(name=db.name, headDirPath=headDirPath)
+
+    kry = Kouriery(db, cf=cf)
     bootApp = falcon.App(middleware=falcon.CORSMiddleware(
         allow_origins='*', allow_credentials='*',
         expose_headers=['cesr-attachment', 'cesr-date', 'content-type', 'signature', 'signature-input',
@@ -53,7 +58,7 @@ def setup(host="127.0.0.1", port=9632, bootHost="127.0.0.1", bootPort=9631, base
                                           certpath=certpath, cafilepath=cafilepath)
     serverDoer = http.ServerDoer(server=server)
 
-    doers = [kry, serverDoer, bootSrvrDoer]
+    doers = [kry, serverDoer, bootSrvrDoer, dbDoer]
 
     return doers
 
@@ -65,7 +70,7 @@ def loadEnds(app, kry):
 
 class Kouriery(doing.DoDoer):
 
-    def __init__(self, pobox, cf=None):
+    def __init__(self, db, cf=None):
         self.cf = cf
         if self.cf is not None:
             conf = self.cf.get()
@@ -81,25 +86,27 @@ class Kouriery(doing.DoDoer):
                         self.scheme = (splits.scheme if splits.scheme in kering.Schemes
                                        else kering.Schemes.http)
 
-        self.pobox = pobox
+        self.db = db
         self.kors = dict()
 
         self.reload()
-        super(Kouriery, self).__init__(doers=[], always=True)
+
+        doers = self.kors.values()
+        super(Kouriery, self).__init__(doers=doers, always=True)
 
     def reload(self):
-        for said, kor in self.pobox.kors.getItemIter():
-            hby = habbing.Habery(name=kor.name, base=self.pobox.base, temp=self.pobox.temp)
+        for said, kor in self.db.kors.getItemIter():
+            hby = habbing.Habery(name=kor.name, base=self.db.base, temp=self.db.temp)
             hab = hby.habByName(kor.name)
 
-            kourier = Kourier(kry=self, pobox=self.pobox, hby=hby, hab=hab, cid=kor.cid)
+            kourier = Kourier(kry=self, pobox=self.db, hby=hby, hab=hab, cid=kor.cid)
             self.kors[hab.pre] = kourier
 
     def lookup(self, aid):
         if aid in self.kors:
             return self.kors[aid]
 
-        if (said := self.pobox.cids.get(keys=(aid,))) is not None:
+        if (said := self.db.cids.get(keys=(aid,))) is not None:
             return self.kors[said]
 
         return None
@@ -109,7 +116,7 @@ class Kouriery(doing.DoDoer):
         name = core.Salter().qb64
 
         # We need to manage keys from an HSM here
-        hby = habbing.Habery(name=name, base=self.pobox.base, bran=None)
+        hby = habbing.Habery(name=name, base=self.db.base, bran=None)
         hab = hby.makeHab(name=name, transferable=False)
         dt = helping.nowIso8601()
 
@@ -128,10 +135,10 @@ class Kouriery(doing.DoDoer):
             eid=hab.pre
         )
 
-        self.pobox.kors.pin(keys=(hab.pre,), val=kor)
-        self.pobox.cids.pin(keys=(aid,), val=hab.kever.prefixer.qb64)
+        self.db.kors.pin(keys=(hab.pre,), val=kor)
+        self.db.cids.pin(keys=(aid,), val=hab.kever.prefixer.qb64)
 
-        kourier = Kourier(kry=self, pobox=self.pobox, hby=hby, hab=hab, cid=aid, )
+        kourier = Kourier(kry=self, pobox=self.db, hby=hby, hab=hab, cid=aid, )
         self.kors[hab.pre] = kourier
 
         self.extend([kourier])
@@ -171,6 +178,11 @@ class Kourier(doing.DoDoer):
         doers = [*oobiery.doers]
 
         super(Kourier, self).__init__(doers=doers, always=True)
+
+    def exit(self, deeds=None):
+        if self.hby:
+            logger.info(f"Closing Kourier database {self.hby.name}")
+            self.hby.close()
 
     def oobis(self):
         oobis = []
