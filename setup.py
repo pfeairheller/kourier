@@ -34,7 +34,7 @@ from setuptools import setup
 
 setup(
     name='kourier',
-    version='0.0.4',  # also change in src/kourier/__init__.py
+    version='0.0.5',  # also change in src/kourier/__init__.py
     license='None',
     description='The KERI Inbox as a Service',
     long_description="The KERI Inbox as a Service",
