@@ -47,7 +47,7 @@ class Baser(dbing.LMDBer):
         # Kourier dataclass keyed by watcher AID
         self.kors = koming.Komer(db=self, subkey='kors.', schema=Kor, )
         # Controller AID to mailbox AID index
-        self.cids = subing.Suber(db=self, subkey='cids.')
+        self.cids = subing.IoSetSuber(db=self, subkey='cids.')
 
         return self.env
 

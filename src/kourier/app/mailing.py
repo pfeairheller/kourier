@@ -41,6 +41,8 @@ def setup(host="127.0.0.1", port=9632, bootHost="127.0.0.1", bootPort=9631, base
     bootSrvrDoer = http.ServerDoer(server=bootServer)
     korColEnd = KourierCollectionEnd(kry=kry)
     bootApp.add_route("/mailboxes", korColEnd)
+    korResEnd = KourierResourceEnd(kry=kry)
+    bootApp.add_route("/mailboxes/{eid}", korResEnd)
 
     app = falcon.App(middleware=falcon.CORSMiddleware(
         allow_origins='*', allow_credentials='*',
@@ -106,9 +108,6 @@ class Kouriery(doing.DoDoer):
         if aid in self.kors:
             return self.kors[aid]
 
-        if (said := self.db.cids.get(keys=(aid,))) is not None:
-            return self.kors[said]
-
         return None
 
     def createKourier(self, aid):
@@ -136,7 +135,7 @@ class Kouriery(doing.DoDoer):
         )
 
         self.db.kors.pin(keys=(hab.pre,), val=kor)
-        self.db.cids.pin(keys=(aid,), val=hab.kever.prefixer.qb64)
+        self.db.cids.add(keys=(aid,), val=hab.kever.prefixer.qb64)
 
         kourier = Kourier(kry=self, pobox=self.db, hby=hby, hab=hab, cid=aid, )
         self.kors[hab.pre] = kourier
@@ -144,6 +143,19 @@ class Kouriery(doing.DoDoer):
         self.extend([kourier])
 
         return kourier
+
+    def deleteKourier(self, eid):
+        if eid not in self.kors:
+            raise ValueError(f"Unable to delete mailbox, {eid} is not a valid mailbox identifier")
+
+        kourier = self.kors[eid]
+
+        cid = kourier.cid
+        self.db.kors.rem(keys=(eid,))
+        self.db.cids.rem(keys=(cid,), val=eid)
+        kourier.hby.close(clear=True)
+
+        self.remove([kourier])
 
 
 class Kourier(doing.DoDoer):
@@ -336,3 +348,30 @@ class AuthCollectionEnd:
         rep.content_type = "application/json"
         rep.status = falcon.HTTP_200
         rep.data = json.dumps(body).encode("utf-8")
+
+
+class KourierResourceEnd:
+
+    def __init__(self, kry: Kouriery):
+        self.kry = kry
+
+    def on_delete(self, _, rep, eid):
+        """
+        Delete a running witness, this is not undo-able
+        Args:
+            _ (Request): Falcon request object
+            rep (Response): Falcon response object
+            eid (str): qb64 identifier of witness to delete
+
+        """
+        try:
+            coring.Prefixer(qb64=eid)
+        except Exception as e:
+            raise falcon.HTTPBadRequest(description=f"invalid AID for a kourier: {e.args[0]}")
+
+        try:
+            self.kry.deleteKourier(eid=eid)
+        except kering.ConfigurationError as e:
+            raise falcon.HTTPBadRequest(description=e.args[0])
+
+        rep.status = falcon.HTTP_204

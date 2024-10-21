@@ -69,7 +69,7 @@ setup(
     python_requires='>=3.12.2',
     install_requires=[
         'hio>=0.6.13',
-        'keri==1.2.0-rc1',
+        'keri==1.2.0-rc4',
         'multicommand>=1.0.0',
         'falcon>=3.1.0',
         'http_sfv>=0.9.8',
