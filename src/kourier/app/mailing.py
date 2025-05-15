@@ -108,6 +108,11 @@ class Kouriery(doing.DoDoer):
         if aid in self.kors:
             return self.kors[aid]
 
+        if (saids := self.db.cids.get(keys=(aid,))) is not None:
+            if saids:
+                said = saids[0]
+                return self.kors[said]
+
         return None
 
     def createKourier(self, aid):
